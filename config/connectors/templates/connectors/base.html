@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Kafka Connect{% endblock %}</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 -apple-system, Segoe UI, Roboto, sans-serif;
+           background: #f6f7f8; color: #1f2328; }
+    header { background: #12232e; color: #fff; padding: 14px 24px;
+             display: flex; align-items: center; gap: 22px; }
+    header .brand { font-weight: 700; letter-spacing: .3px; color: #fff;
+                    text-decoration: none; }
+    header nav a { color: #cfd8dd; text-decoration: none; margin-right: 18px; }
+    header nav a:hover { color: #fff; }
+    .wrap { max-width: 760px; margin: 32px auto; padding: 0 20px; }
+    .card { background: #fff; border: 1px solid #e3e6e8; border-radius: 12px;
+            padding: 26px; }
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    .sub { color: #6b7280; margin: 0 0 22px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input[type=text], select, textarea { width: 100%; padding: 10px 12px;
+      border: 1px solid #c8ccd1; border-radius: 8px; font: inherit;
+      background: #fff; color: #1f2328; }
+    input:focus, select:focus, textarea:focus { outline: none;
+      border-color: #1a7f64; box-shadow: 0 0 0 3px rgba(26,127,100,.18); }
+    .field { margin-bottom: 20px; }
+    .help { color: #6b7280; font-size: 13px; margin-top: 6px; }
+    .err { color: #b42318; font-size: 14px; margin-top: 6px; }
+    .warn { background: #fdf6e3; border: 1px solid #e5d9a8; color: #6b5900;
+            padding: 12px 14px; border-radius: 8px; margin-bottom: 20px; }
+    .actions { display: flex; justify-content: space-between;
+               align-items: center; gap: 14px; margin-top: 26px; }
+    .actions.end { justify-content: flex-end; }
+    a.btn, button { display: inline-block; border: 0; border-radius: 6px;
+      padding: 11px 22px; font: inherit; font-weight: 600; cursor: pointer;
+      text-decoration: none; }
+    a.btn { background: #eef2f5; color: #1f2328; border: 1px solid #c8ccd1; }
+    a.btn:hover { background: #e2e8ec; }
+    button { background: #1a7f64; color: #fff; }
+    button:hover { filter: brightness(.94); }
+    .radios { display: flex; gap: 8px; flex-wrap: wrap; margin: 0;
+              padding: 0; list-style: none; }
+    .radios li { margin: 0; padding: 0; }
+    .radios label { display: flex; align-items: center; gap: 7px;
+      padding: 9px 14px; border: 1px solid #e3e6e8; border-radius: 8px;
+      background: #fbfcfc; font-weight: 500; cursor: pointer; margin: 0; }
+    .radios label:has(input:checked) { border-color: #1a7f64;
+      background: #eef7f4; color: #14654f; font-weight: 600; }
+    .keys { margin: 10px 0 0; padding: 0; list-style: none; }
+    .keys li { display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px; background: #fbfcfc; border: 1px solid #e3e6e8;
+      border-radius: 8px; padding: 10px 12px; }
+    .keys li.empty { color: #6b7280; font-style: italic;
+      justify-content: flex-start; }
+    .keyval { font-family: Consolas, monospace; font-size: 14px; }
+    button.mini { background: #fff; color: #b42318; border: 1px solid #e3c5c1;
+      padding: 4px 10px; font-size: 13px; font-weight: 500; }
+    button.mini:hover { background: #fdecee; }
+    button.mini.save { background: #fff; color: #14654f;
+      border: 1px solid #b9d9cf; }
+    button.mini.save:hover { background: #eef7f4; }
+    .inline-row { display: flex; gap: 8px; margin-top: 10px; }
+    .inline-row input[type=text] { flex: 1; }
+    .inline-row button { white-space: nowrap; }
+    .tr-add { margin-top: 12px; }
+    .tr-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tr-row select { flex: 0 0 240px; width: auto; }
+    .tr-row input[type=text] { flex: 1 1 240px; min-width: 200px; }
+    .tr-row button { flex: 0 0 auto; }
+    .tr-item { border: 1px solid #e3e6e8; border-radius: 8px;
+      background: #fbfcfc; padding: 10px 12px; margin-bottom: 8px; }
+    .tr-item-row { display: flex; align-items: center; gap: 8px; }
+    .tr-item-row .keyval { flex: 0 0 160px; }
+    .editval { flex: 1 1 auto; min-width: 160px; }
+    .hidden { display: none; }
+    .json { background: #12232e; color: #e6edf3; padding: 16px;
+      border-radius: 8px; overflow: auto; font-size: 13px; }
+    table.kv { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
+    table.kv td, table.kv th { padding: 8px 10px; border-bottom: 1px solid #eef0f2;
+      text-align: left; }
+    table.kv td:first-child, table.kv th:first-child { color: #6b7280;
+      width: 200px; }
+    code { background: #eef2f5; padding: 1px 6px; border-radius: 4px;
+      font-size: 13px; }
+    ul.tiles { list-style: none; padding: 0; margin: 0; }
+    ul.tiles li { margin-bottom: 10px; }
+    ul.tiles a { display: block; padding: 16px; border: 1px solid #e3e6e8;
+      border-radius: 10px; background: #fff; text-decoration: none;
+      color: #1f2328; }
+    ul.tiles a:hover { border-color: #1a7f64; background: #f4faf8; }
+    ul.tiles b { display: block; margin-bottom: 4px; }
+    ul.tiles span { color: #6b7280; font-size: 13px; }
+        .valtext { flex: 1 1 auto; font-family: Consolas, monospace;
+               font-size: 14px; color: #1f2328; }
+    button.mini.edit { background: #fff; color: #14654f;
+                       border: 1px solid #b9d9cf; }
+    button.mini.edit:hover { background: #eef7f4; }
+    button.mini.cancel { background: #fff; color: #6b7280;
+                         border: 1px solid #d6dade; }
+    button.mini.cancel:hover { background: #f2f4f5; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="{% url 'connectors:welcome' %}">Kafka Connect Survey</a>
+    <nav>
+      <a href="{% url 'connectors:welcome' %}">Создание коннектора</a>
+      <a href="{% url 'connectors:settings' %}">Настройки</a>
+    </nav>
+  </header>
+  <div class="wrap">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

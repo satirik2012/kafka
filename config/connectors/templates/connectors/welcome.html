@@ -1,0 +1,27 @@
+{% extends "connectors/base.html" %}
+{% block title %}Добро пожаловать{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Добро пожаловать</h1>
+  <p class="sub">Введите название коннектора и укажите формат: sink или source.</p>
+
+  <form method="post">{% csrf_token %}
+    <div class="field">
+      <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+      {{ form.name }}
+      <div class="help">{{ form.name.help_text }}</div>
+      {% for e in form.name.errors %}<div class="err">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="field">
+      <label>{{ form.direction.label }}</label>
+      {{ form.direction }}
+      {% for e in form.direction.errors %}<div class="err">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="actions end">
+      <button type="submit">Продолжить</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

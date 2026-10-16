@@ -1,0 +1,109 @@
+{% extends "connectors/base.html" %}
+{% block title %}Настройки топика{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Настройки топика</h1>
+  <p class="sub">Коннектор <b>{{ survey.name }}</b> &middot; {{ direction_label }}</p>
+
+  {% if form.non_field_errors %}
+    {% for e in form.non_field_errors %}<div class="err">{{ e }}</div>{% endfor %}
+  {% endif %}
+
+  {% if no_systems %}
+    <div class="warn">
+      В справочнике нет систем для формата «{{ direction_label }}».
+      Добавьте их в <a href="/admin/connectors/system/">админке</a>
+      и обновите страницу.
+    </div>
+  {% endif %}
+
+  <form method="post" id="main-form">{% csrf_token %}
+
+    <div class="field">
+      <label>{{ form.system.label }}</label>
+      {{ form.system }}
+      {% for e in form.system.errors %}<div class="err">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="field">
+      <label>Формат данных</label>
+      <ul class="radios">
+        {% for value, label in data_formats %}
+          <li>
+            <label>
+              <input type="radio" name="data_format" value="{{ value }}"
+                     {% if selected_format == value %}checked{% endif %}>
+              {{ label }}
+            </label>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="field">
+      <label>Формат счётчика</label>
+      <ul class="radios" id="gen-radios">
+        {% for value, label in record_generations %}
+          <li>
+            <label>
+              <input type="radio" name="record_generation" value="{{ value }}"
+                     {% if selected_generation == value %}checked{% endif %}>
+              {{ label }}
+            </label>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="field {% if selected_generation != 'incrementing' %}hidden{% endif %}"
+         id="incrementing-field">
+      <label>Поле incrementing</label>
+      <div class="help">Имя поля, которое будет монотонно расти.</div>
+      <input type="text" name="incrementing_column"
+             value="{{ selected_incrementing }}" placeholder="changeId">
+    </div>
+
+    <div class="field">
+      <label>Key</label>
+      <div class="help">Введите значение и нажмите «Добавить». Лишнее
+        удаляется кнопкой рядом. Можно оставить пустым, если ключ не нужен.</div>
+
+      <ul class="keys">
+        {% for k in keys %}
+        <li>
+          <span class="keyval">{{ k }}</span>
+          <button class="mini del" type="submit" form="main-form"
+                  name="del_value" value="{{ k }}"
+                  formnovalidate>Удалить</button>
+        </li>
+        {% empty %}
+        <li class="empty">Ключей пока нет</li>
+        {% endfor %}
+      </ul>
+
+      <div class="inline-row">
+        {{ key_form.value }}
+        <button type="submit" form="main-form" name="action" value="add_key"
+                formnovalidate>Добавить</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="{% url 'connectors:welcome' %}?back=1">Назад</a>
+      <button type="submit" name="action" value="next"
+              formnovalidate>Продолжить</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  const radios = document.querySelectorAll(
+    '#gen-radios input[name=record_generation]');
+  const box = document.getElementById('incrementing-field');
+  radios.forEach(r => r.addEventListener('change', () => {
+    const inc = document.querySelector(
+      '#gen-radios input[name=record_generation][value=incrementing]');
+    box.classList.toggle('hidden', !(inc && inc.checked));
+  }));
+</script>
+{% endblock %}

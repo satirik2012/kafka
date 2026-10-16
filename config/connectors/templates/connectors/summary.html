@@ -1,0 +1,82 @@
+{% extends "connectors/base.html" %}
+{% block title %}Настройки коннектора{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Настройки коннектора</h1>
+  <p class="sub">Коннектор <b>{{ survey.name }}</b>. Добавьте трансформации,
+     они попадут в конфиг.</p>
+
+  {% for e in errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <table class="kv">
+    <tr><td>Система</td><td>{{ system.name }}</td></tr>
+    <tr><td>Формат данных</td><td>{{ survey.data_format }}</td></tr>
+    <tr><td>Формат счётчика</td><td>{{ survey.record_generation }}</td></tr>
+    <tr><td>Key</td><td>{% for k in survey.keys %}<code>{{ k }}</code> {% empty %}не задан{% endfor %}</td></tr>
+  </table>
+
+  <div class="field">
+    <label>Трансформации</label>
+
+    {% for tr in transforms %}
+      {% if editing_index == forloop.counter0 %}
+      <form method="post" class="tr-item">
+        {% csrf_token %}
+        <div class="tr-item-row">
+          <span class="keyval">{{ tr.name }}</span>
+          <input type="text" name="field_value" value="{{ tr.field }}"
+                 class="editval">
+          <input type="hidden" name="edit_index" value="{{ forloop.counter0 }}">
+          <button class="mini save" type="submit"
+                  name="action" value="edit_transform">Сохранить</button>
+          <button class="mini cancel" type="submit"
+                  name="action" value="cancel_edit"
+                  formnovalidate>Отмена</button>
+        </div>
+      </form>
+      {% else %}
+      <form method="post" class="tr-item">
+        {% csrf_token %}
+        <div class="tr-item-row">
+          <span class="keyval">{{ tr.name }}</span>
+          <span class="valtext">{{ tr.field }}</span>
+          <input type="hidden" name="edit_index" value="{{ forloop.counter0 }}">
+          <button class="mini edit" type="submit"
+                  name="action" value="start_edit"
+                  formnovalidate>Редактировать</button>
+          <button class="mini del" type="submit"
+                  name="action" value="del_transform"
+                  formnovalidate>Удалить</button>
+        </div>
+      </form>
+      {% endif %}
+    {% empty %}
+      <div class="help">Трансформаций пока нет.</div>
+    {% endfor %}
+
+    <form method="post" class="tr-add">{% csrf_token %}
+      <div class="tr-row">
+        <select name="transform">
+          {% for t in all_transforms %}
+            <option value="{{ t.pk }}"
+              {% if not t.multiple and t.pk in used_ids %}disabled{% endif %}>
+              {{ t.name }}{% if not t.multiple %} — одноразовая{% endif %}
+            </option>
+          {% endfor %}
+        </select>
+        <input type="text" name="field_value" placeholder="changeId,key">
+        <button type="submit" name="action" value="add_transform"
+                formnovalidate>Добавить</button>
+      </div>
+    </form>
+  </div>
+
+  <h3>Предпросмотр конфига</h3>
+  <pre class="json">{{ preview }}</pre>
+
+  <div class="actions">
+    <a class="btn" href="{% url 'connectors:system' %}?back=1">Назад</a>
+    <span class="sub">Сохранение в БД сделаем следующим шагом</span>
+  </div>
+</div>
+{% endblock %}

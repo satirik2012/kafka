@@ -1,0 +1,182 @@
+{% extends "admin/base.html" %}
+
+{% block dark-mode-vars %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+  document.cookie = "django_admin_theme=light; path=/; max-age=31536000; samesite=Lax";
+</script>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* ===== палитра ===== */
+  :root {
+    --primary: #12232e;
+    --secondary: #1a7f64;
+    --accent: #1a7f64;
+    --header-color: #ffffff;
+    --header-link-color: #cfd8dd;
+    --header-brandlink-color: #ffffff;
+    --button-bg: #1a7f64;
+    --button-hover: #14654f;
+    --link-fg: #14654f;
+    --link-selected-fg: #1a7f64;
+    --body-fg: #1f2328;
+    --body-bg: #f6f7f8;
+    --body-quiet-color: #6b7280;
+    --border-color: #e3e6e8;
+    --input-bg: #ffffff;
+    --input-fg: #1f2328;
+    --input-border-color: #c8ccd1;
+    --module-bg: #ffffff;
+    --header-bg: #12232e;
+    --breadcrumbs-bg: #eef2f5;
+    --breadcrumbs-fg: #374151;
+    --breadcrumbs-link-fg: #14654f;
+    --delete-button-bg: #b42318;
+  }
+
+  /* ===== переключатель тем убираем ===== */
+  #theme-toggle, .theme-toggle, #theme-toggle-button { display: none !important; }
+
+  /* ===== каркас ===== */
+  #container, #content { background: #f6f7f8 !important; }
+  #header { background: #12232e !important; padding: 14px 24px !important;
+            min-height: 0 !important; }
+  #branding h1, #branding h1 a:link, #branding h1 a:visited {
+      color: #fff !important; font-size: 18px; }
+  #header a:link, #header a:visited { color: #cfd8dd !important; }
+  #header a:hover { color: #fff !important; }
+  #user-tools { color: #cfd8dd !important; }
+  #user-tools a { color: #cfd8dd !important; }
+  #user-tools a:hover { color: #fff !important; }
+
+  div.breadcrumbs { background: #eef2f5 !important; color: #374151 !important;
+                    border-bottom: 1px solid #dde3e7 !important;
+                    padding: 10px 24px !important; }
+  div.breadcrumbs a { color: #14654f !important; }
+
+  /* ===== карточки ===== */
+  .module, #content-related .module, #changelist-filter,
+  .results, .change-form { background: #fff !important;
+      border: 1px solid #e3e6e8 !important; border-radius: 10px !important; }
+  .module h2, .module caption, .inline-group h2 {
+      background: #fff !important; color: #1f2328 !important;
+      font-weight: 600 !important; border-bottom: 1px solid #e3e6e8 !important; }
+  .module p, .module ul, .module div { color: #374151 !important; }
+
+  /* ===== левый сайдбар ===== */
+  #nav-sidebar { width: 270px !important; background: #fff !important;
+      border-right: 1px solid #e3e6e8 !important; }
+  #nav-sidebar .module, #nav-sidebar ul, #nav-sidebar table {
+      background: #fff !important; }
+
+  /* заголовки групп — была тёмная подложка + тёмный текст */
+  #nav-sidebar caption, #nav-sidebar th, #nav-sidebar .group-name,
+  #nav-sidebar h2 {
+      background: #f6f7f8 !important; color: #6b7280 !important;
+      text-transform: uppercase !important; font-size: 11px !important;
+      letter-spacing: .07em !important; font-weight: 700 !important;
+      padding: 10px 12px !important; border-bottom: 1px solid #e3e6e8 !important; }
+
+  #nav-sidebar a, #nav-sidebar a:link, #nav-sidebar a:visited {
+      color: #1f2328 !important; background: transparent !important;
+      padding: 8px 12px !important; border-radius: 6px !important; }
+  #nav-sidebar a:hover { background: #f4faf8 !important;
+      color: #14654f !important; }
+  #nav-sidebar a.selected { background: #eef7f4 !important;
+      color: #14654f !important; font-weight: 600 !important; }
+  #nav-sidebar a.addlink, #nav-sidebar a.addlink:link {
+      color: #1a7f64 !important; font-weight: 600 !important; }
+  #nav-sidebar tr.selected { background: #eef7f4 !important; }
+
+  #nav-sidebar-filter, #nav-filter { background: #fff !important;
+      color: #1f2328 !important; border: 1px solid #c8ccd1 !important;
+      border-radius: 6px !important; }
+  #toggle-nav-sidebar { background: #fff !important;
+      border: 1px solid #e3e6e8 !important; color: #6b7280 !important; }
+
+  /* ===== таблица списка ===== */
+  #result_list thead th, .results thead th, #result_list thead td {
+      background: #fbfcfc !important; color: #6b7280 !important;
+      text-transform: uppercase !important; font-size: 11px !important;
+      letter-spacing: .04em !important;
+      border-bottom: 1px solid #e3e6e8 !important; }
+  #result_list tbody tr, .results tbody tr, #result_list tbody th {
+      background: #fff !important; color: #1f2328 !important; }
+  #result_list tbody tr:nth-child(even), .results tbody tr:nth-child(even) {
+      background: #fbfcfc !important; }
+  #result_list tbody tr:hover, .results tbody tr:hover {
+      background: #eef7f4 !important; }
+  #result_list a:link, #result_list a:visited, .results a:link {
+      color: #14654f !important; }
+  .field-order input[type=number], .field-code { background: #fff !important;
+      color: #1f2328 !important; }
+  .action-select { accent-color: #1a7f64; }
+
+  /* ===== панель поиска и действий ===== */
+  .changelist-search, .actions, .change-list .filtered .actions {
+      background: #fbfcfc !important; border: 1px solid #e3e6e8 !important;
+      border-radius: 8px !important; }
+  .actions select, .actions input, #changelist-search input[type=text] {
+      background: #fff !important; color: #1f2328 !important;
+      border: 1px solid #c8ccd1 !important; border-radius: 6px !important; }
+  .actions span.all, .actions span.action-counter,
+  .actions span.clear, .actions span.question {
+      background: transparent !important; color: #6b7280 !important; }
+
+  /* ===== правый фильтр ===== */
+  #changelist-filter, #content-related, #content-related .module {
+      width: 240px !important; background: #fff !important;
+      color: #374151 !important; border: 1px solid #e3e6e8 !important;
+      border-radius: 10px !important; }
+  #changelist-filter h2 { background: #fff !important;
+      color: #1f2328 !important; }
+  #changelist-filter a { color: #374151 !important; }
+  #changelist-filter a:hover { color: #1a7f64 !important; }
+  #changelist-filter li.selected { border-left-color: #1a7f64 !important; }
+  #changelist-filter li.selected a { color: #14654f !important; }
+
+  /* ===== кнопки ===== */
+  .submit-row input, input[type=submit], button, a.button, input.button,
+  .button.default, .submit-row input.default {
+      background: #1a7f64 !important; color: #fff !important;
+      border: 0 !important; border-radius: 6px !important;
+      padding: 9px 18px !important; }
+  .submit-row input:hover, input[type=submit]:hover, a.button:hover {
+      background: #14654f !important; }
+  .deletelink, .deletelink:link, .deletelink:visited {
+      background: #b42318 !important; color: #fff !important;
+      border-radius: 6px !important; }
+  .object-tools a:link, .object-tools a:visited {
+      background: #1a7f64 !important; color: #fff !important;
+      border-radius: 6px !important; }
+  .object-tools a:hover { background: #14654f !important; }
+
+  /* ===== поля формы ===== */
+  input[type=text], input[type=password], input[type=number],
+  input[type=email], input[type=url], textarea, select {
+      background: #fff !important; color: #1f2328 !important;
+      border: 1px solid #c8ccd1 !important; border-radius: 6px !important; }
+  input:focus, textarea:focus, select:focus {
+      border-color: #1a7f64 !important;
+      box-shadow: 0 0 0 3px rgba(26,127,100,.18) !important; }
+  .form-row label, .form-row p, .readonly { color: #1f2328 !important; }
+  .help, .help-tooltip, .timesince, .tiny, .small, .quiet {
+      color: #6b7280 !important; }
+  fieldset.module aligned, .aligned { color: #1f2328 !important; }
+
+  /* ===== сообщения, пагинация ===== */
+  .messagelist li.success { background: #eef7f4 !important;
+      color: #14654f !important; }
+  .messagelist li.warning { background: #fdf6e3 !important; }
+  .messagelist li.error { background: #fdecee !important; color: #b42318 !important; }
+  .paginator, .paginator a:link, .paginator a:visited {
+      color: #6b7280 !important; background: transparent !important; }
+  div.clear-block, .clear { background: transparent !important; }
+</style>
+{% endblock %}

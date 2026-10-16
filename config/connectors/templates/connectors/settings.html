@@ -1,0 +1,22 @@
+{% extends "connectors/base.html" %}
+{% block title %}Настройки{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Настройки</h1>
+  <p class="sub">Раздел наполняется. Пока отсюда можно попасть в админку.</p>
+  <ul class="tiles">
+    <li><a href="/admin/connectors/system/">
+      <b>Системы</b>
+      <span>Справочник продюсеров и приёмников для выпадающих списков</span>
+    </a></li>
+    <li><a href="/admin/connectors/connectorconfig/">
+      <b>Конфигурации коннекторов</b>
+      <span>Уже сохранённые коннекторы и их JSON</span>
+    </a></li>
+          <li><a href="{% url 'connectors:transforms' %}">
+      <b>Трансформации</b>
+      <span>Шаблоны трансформаций для шага «Настройки коннектора»</span>
+    </a></li>
+  </ul>
+</div>
+{% endblock %}

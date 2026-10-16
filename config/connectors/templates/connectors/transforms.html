@@ -1,0 +1,77 @@
+{% extends "connectors/base.html" %}
+{% block title %}Трансформации{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{% if editing %}Редактирование трансформации{% else %}Новая трансформация{% endif %}</h1>
+  <p class="sub">Шаблоны, доступные на шаге «Настройки коннектора».</p>
+
+  <form method="post">{% csrf_token %}
+    <input type="hidden" name="pk" value="{{ editing.pk }}">
+
+    <div class="field">
+      <label>Название</label>
+      <input type="text" name="name" value="{{ editing.name|default:'' }}">
+    </div>
+
+    <div class="field">
+      <label>Что делает</label>
+      <textarea name="description" rows="2">{{ editing.description|default:'' }}</textarea>
+    </div>
+
+    <div class="field">
+      <label>Класс трансформации</label>
+      <input type="text" name="transform_class"
+             value="{{ editing.transform_class|default:'' }}">
+    </div>
+
+    <div class="field">
+      <label>Шаблон конфига (JSON)</label>
+      <textarea name="config_template" rows="6">{{ editing.config_template|default:'' }}</textarea>
+      <div class="help">JSON с плейсхолдером <code>{field}</code>. Пример:
+        <code>{"transforms.ReplaceField.type": "org.apache.kafka.connect.transforms.ReplaceField$Value", "transforms.ReplaceField.blacklist": "{field}"}</code>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Подпись поля</label>
+      <input type="text" name="field_label"
+             value="{{ editing.field_label|default:'Поля через запятую' }}">
+    </div>
+
+    <div class="field">
+      <label>
+        <input type="checkbox" name="multiple" value="1"
+               {% if editing.multiple %}checked{% endif %}>
+        Можно добавлять несколько раз
+      </label>
+      <div class="help">Снимите галку, если трансформация может быть только одна.</div>
+    </div>
+
+    <div class="field">
+      <label>Порядок</label>
+      <input type="number" name="order" value="{{ editing.order|default:0 }}">
+    </div>
+
+    <div class="actions end">
+      <button type="submit">Сохранить</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Список</h3>
+  <table class="kv">
+    <tr><th>Название</th><th>Класс</th><th>Режим</th><th></th></tr>
+    {% for t in items %}
+    <tr>
+      <td>{{ t.name }}</td>
+      <td><code>{{ t.transform_class }}</code></td>
+      <td>{% if t.multiple %}многоразовая{% else %}одноразовая{% endif %}</td>
+      <td><a href="?edit={{ t.pk }}">редактировать</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Трансформаций нет</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
